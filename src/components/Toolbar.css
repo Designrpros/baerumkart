@@ -20,6 +20,9 @@
   .search-container {
     position: relative;
     width: 300px;
+    display: flex; /* Added to center the input */
+    align-items: center; /* Vertically center the input */
+    justify-content: center; /* Horizontally center the input */
   }
   
   @media (max-width: 768px) {
@@ -36,7 +39,7 @@
   
   .search-input {
     width: 100%;
-    padding: 0.5rem 2.5rem 0.5rem 1rem;
+    padding: 0.3rem 2.5rem 0.3rem 1rem; /* Thinner as previously set */
     border-radius: 20px;
     border: 1px solid #ccc;
     font-size: 0.9rem;
