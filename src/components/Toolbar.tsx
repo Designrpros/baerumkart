@@ -1,8 +1,6 @@
-// src/components/Toolbar.tsx
 "use client";
 
 import { useState, useEffect } from "react";
-import styled from "styled-components";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import Logo from "./Logo";
@@ -11,182 +9,7 @@ import { onAuthStateChanged, signOut } from "firebase/auth";
 import { collection, onSnapshot } from "firebase/firestore";
 import { Spot } from "../data/spots";
 import { ADMIN_EMAILS } from "../adminPrivileges";
-
-const ToolbarContainer = styled.header`
-  position: sticky;
-  top: 0;
-  background-color: #ffffff;
-  padding: 0.5rem 2rem;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  z-index: 1000;
-  height: 50px;
-  font-family: "Helvetica", sans-serif;
-`;
-
-const LeftSection = styled.div`
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-`;
-
-const SearchContainer = styled.div`
-  position: relative;
-  width: 300px;
-
-  @media (max-width: 768px) {
-    width: 200px;
-  }
-
-  @media (max-width: 480px) {
-    width: 150px;
-  }
-`;
-
-const SearchInput = styled.input`
-  width: 100%;
-  padding: 0.5rem 2.5rem 0.5rem 1rem;
-  border-radius: 20px;
-  border: 1px solid #ccc;
-  font-size: 0.9rem;
-  outline: none;
-  background: #fff;
-  color: #1a1a1a;
-  font-family: "Helvetica", sans-serif;
-
-  &::placeholder {
-    color: #999;
-  }
-`;
-
-const SearchIcon = styled.span`
-  position: absolute;
-  right: 0.75rem;
-  top: 50%;
-  transform: translateY(-50%);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  
-  img {
-    width: 22px;  /* Set appropriate icon size */
-    height: 20px;
-  }
-`;
-
-const SearchResults = styled.div`
-  position: absolute;
-  top: 100%;
-  left: 0;
-  width: 100%;
-  max-height: 200px;
-  overflow-y: auto;
-  background: #fff;
-  border-radius: 0 0 20px 20px;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-  z-index: 1001;
-  padding: 0.5rem;
-`;
-
-const SearchResultItem = styled.div`
-  padding: 0.5rem;
-  cursor: pointer;
-  color: #1a1a1a;
-
-  &:hover {
-    background-color: #f9f9f9;
-  }
-`;
-
-const ResultTitle = styled.div`
-  font-weight: 500;
-  font-size: 0.9rem;
-`;
-
-const ResultDescription = styled.div`
-  font-size: 0.8rem;
-  color: #666;
-`;
-
-const Tabs = styled.nav<{ $isOpen: boolean }>`
-  display: flex;
-  gap: 1rem;
-
-  @media (max-width: 768px) {
-    display: ${({ $isOpen }) => ($isOpen ? "flex" : "none")};
-    flex-direction: column;
-    position: absolute;
-    top: 50px;
-    right: 0;
-    background-color: #ffffff;
-    padding: 1rem;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    width: 200px;
-    z-index: 999;
-  }
-`;
-
-const TabLink = styled(Link)`
-  color: #1a1a1a;
-  font-size: 0.9rem;
-  text-decoration: none;
-  padding: 0.5rem 1rem;
-  border-radius: 20px;
-  transition: background-color 0.3s;
-
-  &:hover {
-    background-color: #e6f0e6;
-  }
-
-  @media (max-width: 768px) {
-    padding: 0.5rem;
-    border-radius: 0;
-    text-align: center;
-  }
-`;
-
-const AuthButton = styled.button`
-  color: #1a1a1a;
-  font-size: 0.9rem;
-  text-decoration: none;
-  padding: 0.5rem 1rem;
-  border-radius: 20px;
-  border: none;
-  background: none;
-  cursor: pointer;
-  transition: background-color 0.3s;
-
-  &:hover {
-    background-color: #e6f0e6;
-  }
-
-  @media (max-width: 768px) {
-    padding: 0.5rem;
-    border-radius: 0;
-    text-align: center;
-  }
-`;
-
-const Hamburger = styled.div`
-  display: none;
-  flex-direction: column;
-  justify-content: space-between;
-  width: 25px;
-  height: 18px;
-  cursor: pointer;
-
-  @media (max-width: 768px) {
-    display: flex;
-  }
-
-  span {
-    width: 100%;
-    height: 2px;
-    background-color: #1a1a1a;
-    transition: all 0.3s ease;
-  }
-`;
+import "./Toolbar.css";
 
 const Toolbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -263,67 +86,69 @@ const Toolbar = () => {
   );
 
   return (
-    <ToolbarContainer>
-      <LeftSection>
+    <header className="toolbar-container">
+      <div className="left-section">
         <Link href="/">
           <Logo />
         </Link>
-        <SearchContainer>
-          <SearchInput
+        <div className="search-container">
+          <input
             type="text"
             placeholder="Hvor vil du på tur?"
+            className="search-input"
             value={searchQuery}
             onChange={handleSearchChange}
             onFocus={() => setIsSearchExpanded(searchQuery.length > 0)}
             onBlur={() => setTimeout(() => setIsSearchExpanded(false), 200)}
           />
-          <SearchIcon>
+          <span className="search-icon">
             <img src="/icons/search.png" alt="Search" />
-          </SearchIcon>
+          </span>
           {isSearchExpanded && (
-            <SearchResults>
+            <div className="search-results">
               {filteredSpots.length > 0 ? (
                 filteredSpots.map((spot: Spot) => (
-                  <SearchResultItem
+                  <div
                     key={spot.id}
+                    className="search-result-item"
                     onClick={() => handleSearchResultClick(spot.id)}
                   >
-                    <ResultTitle>{spot.name}</ResultTitle>
-                    <ResultDescription>{spot.description}</ResultDescription>
-                  </SearchResultItem>
+                    <div className="result-title">{spot.name}</div>
+                    <div className="result-description">{spot.description}</div>
+                  </div>
                 ))
               ) : (
-                <SearchResultItem>Ingen resultater funnet.</SearchResultItem>
+                <div className="search-result-item">Ingen resultater funnet.</div>
               )}
-            </SearchResults>
+            </div>
           )}
-        </SearchContainer>
-      </LeftSection>
-      <Hamburger onClick={toggleMenu}>
+        </div>
+      </div>
+      <div className="hamburger" onClick={toggleMenu}>
         <span></span>
         <span></span>
         <span></span>
-      </Hamburger>
-      <Tabs $isOpen={isMenuOpen}>
-        <TabLink href="/map" onClick={() => setIsMenuOpen(false)}>
+      </div>
+      <nav className={`tabs ${isMenuOpen ? "open" : ""}`}>
+        <Link href="/map" className="tab-link" onClick={() => setIsMenuOpen(false)}>
           Kart
-        </TabLink>
-        <TabLink href="/oversikt" onClick={() => setIsMenuOpen(false)}>
+        </Link>
+        <Link href="/oversikt" className="tab-link" onClick={() => setIsMenuOpen(false)}>
           Oversikt
-        </TabLink>
-        <TabLink href="/anbefalinger" onClick={() => setIsMenuOpen(false)}>
+        </Link>
+        <Link href="/anbefalinger" className="tab-link" onClick={() => setIsMenuOpen(false)}>
           Anbefalinger
-        </TabLink>
+        </Link>
         {isAdmin && (
-          <TabLink href="/admin" onClick={() => setIsMenuOpen(false)}>
+          <Link href="/admin" className="tab-link" onClick={() => setIsMenuOpen(false)}>
             Admin
-          </TabLink>
+          </Link>
         )}
-        <AuthButton onClick={handleLoginLogout}>
+        <button className="auth-button" onClick={handleLoginLogout}>
           {isLoggedIn ? "Logg Ut" : "Logg Inn"}
-        </AuthButton>
-      </Tabs>
-    </ToolbarContainer>
+        </button>
+      </nav>
+    </header>
   );
 };
 
