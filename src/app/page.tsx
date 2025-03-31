@@ -149,7 +149,7 @@ const SearchResultDescription = styled.p`
 const CategorySection = styled.section`
   padding: 3rem 1rem;
   text-align: center;
-  background-color: #ffff;
+  background-color: #fff;
 `;
 
 const CategoryTitle = styled.h2`
