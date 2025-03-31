@@ -1,18 +1,14 @@
-// src/app/oversikt/page.tsx
 "use client";
 
 import { useState, useMemo, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import styled from "styled-components";
-import { db, auth } from "../../firebase";
+import { db } from "../../firebase";
 import { collection, onSnapshot } from "firebase/firestore";
 import { Spot } from "../../data/spots";
 import { CategoryFilterSection } from "../../components/CategoryFilterSection";
 import { FilterSheet } from "../../components/FilterSheet";
 import LocationCard from "../../components/LocationCard";
-import SearchCard from "../../components/SearchCard";
-import { AuthGuard } from "../../components/AuthGuard";
-import { AddSpotForm } from "../../components/AddSpotForm";
 import "../styles/Oversikt.css";
 
 const HeroSection = styled.section`
@@ -37,43 +33,6 @@ const HeroTitle = styled.h1`
   text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
 `;
 
-const SearchContainer = styled.div`
-  z-index: 1;
-  width: 100%;
-  max-width: 500px;
-  margin-top: 1rem;
-  position: relative;
-`;
-
-const SearchInput = styled.input<{ $expanded: boolean }>`
-  width: 100%;
-  padding: 0.75rem;
-  border-radius: ${({ $expanded }) => ($expanded ? "20px 20px 0 0" : "20px")};
-  border: none;
-  font-size: 1rem;
-  outline: none;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-  font-family: "Helvetica", sans-serif;
-  transition: all 0.3s ease;
-`;
-
-const SearchResults = styled.div`
-  position: absolute;
-  top: 100%;
-  left: 0;
-  width: 100%;
-  max-height: 300px;
-  overflow-y: auto;
-  background: #fff;
-  border-radius: 0 0 20px 20px;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
-  z-index: 1002;
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-  padding: 0.5rem;
-`;
-
 const FilterToggleButton = styled.button`
   position: fixed;
   top: 60px;
@@ -95,33 +54,6 @@ const FilterToggleButton = styled.button`
 
   @media (max-width: 768px) {
     top: 10px;
-    right: 10px;
-    padding: 0.5rem 1rem;
-    font-size: 0.9rem;
-  }
-`;
-
-const ContributeButton = styled.button`
-  position: fixed;
-  top: 120px;
-  right: 20px;
-  padding: 0.75rem 1.5rem;
-  background: #ff6f61;
-  color: white;
-  border: none;
-  border-radius: 20px;
-  cursor: pointer;
-  z-index: 999;
-  font-family: "Helvetica", sans-serif;
-  font-size: 1rem;
-  transition: background-color 0.3s ease;
-
-  &:hover {
-    background-color: #ff897d;
-  }
-
-  @media (max-width: 768px) {
-    top: 60px;
     right: 10px;
     padding: 0.5rem 1rem;
     font-size: 0.9rem;
@@ -157,7 +89,6 @@ const Oversikt = () => {
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [isSearchExpanded, setIsSearchExpanded] = useState<boolean>(false);
   const [spotsList, setSpotsList] = useState<Spot[]>([]);
-  const [showAddForm, setShowAddForm] = useState(false);
 
   useEffect(() => {
     const unsubscribe = onSnapshot(collection(db, "spots"), (snapshot) => {
@@ -206,15 +137,15 @@ const Oversikt = () => {
   }, [selectedCategories, selectedDifficulty, wheelchairAccessible, sortBy, searchQuery, spotsList]);
 
   const handleCategoryChange = (category: string) => {
-    if (category === "Alle") {
-      setSelectedCategories([]);
-    } else {
-      setSelectedCategories((prev) =>
-        prev.includes(category)
-          ? prev.filter((c) => c !== category)
-          : [...prev, category]
-      );
-    }
+    setSelectedCategories((prev) => {
+      if (category === "Alle") {
+        return prev.includes("Alle") ? prev.filter((c) => c !== "Alle") : ["Alle"];
+      }
+      const newCategories = prev.includes(category)
+        ? prev.filter((c) => c !== category)
+        : [...prev.filter((c) => c !== "Alle"), category];
+      return newCategories.length === 0 ? ["Alle"] : newCategories;
+    });
   };
 
   const handleAccessibilityChange = (value: string) => {
@@ -230,45 +161,56 @@ const Oversikt = () => {
   };
 
   const handleSpotNavigate = (spotId: string) => {
-    router.push(`/map?highlight=${spotId}`);
+    router.push(`/location/${spotId}`);
   };
 
-  const handleAddSpot = async (newSpot: Spot) => {
-    setShowAddForm(false);
+  const truncateDescription = (description: string, limit: number = 100) => {
+    return description.length > limit ? description.substring(0, limit) + "..." : description;
   };
 
   return (
     <div className="oversikt-page">
       <HeroSection>
         <HeroTitle>Oversikt over Steder i Bærum</HeroTitle>
-        <SearchContainer>
-          <SearchInput
-            $expanded={isSearchExpanded}
+        <div className="search-container">
+          <input
             type="text"
             placeholder="Søk etter steder..."
+            className={`search-input ${isSearchExpanded ? "expanded" : ""}`}
             value={searchQuery}
             onChange={(e) => {
               setSearchQuery(e.target.value);
               setIsSearchExpanded(e.target.value.length > 0);
             }}
+            onFocus={() => setIsSearchExpanded(searchQuery.length > 0)}
             onBlur={() => setTimeout(() => setIsSearchExpanded(false), 200)}
           />
           {isSearchExpanded && (
-            <SearchResults>
+            <div className="search-results">
               {filteredSpots.length > 0 ? (
                 filteredSpots.map((spot) => (
-                  <SearchCard
+                  <div
                     key={spot.id}
-                    spot={spot}
+                    className="search-result-item"
                     onClick={() => handleSpotNavigate(spot.id)}
-                  />
+                  >
+                    <div className="result-content">
+                      <h3 className="search-result-title">{spot.name}</h3>
+                      <p className="search-result-description">{truncateDescription(spot.description)}</p>
+                    </div>
+                    <img
+                      src={spot.photos && spot.photos.length > 0 ? spot.photos[0] : "/Hero.jpg"}
+                      alt={spot.name}
+                      className="result-image"
+                    />
+                  </div>
                 ))
               ) : (
-                <p>Ingen resultater funnet.</p>
+                <div className="search-result-item">Ingen resultater funnet.</div>
               )}
-            </SearchResults>
+            </div>
           )}
-        </SearchContainer>
+        </div>
         <div
           style={{
             content: '""',
@@ -287,22 +229,12 @@ const Oversikt = () => {
         Filtrer
       </FilterToggleButton>
 
-      <AuthGuard>
-        {(user) =>
-          user && (
-            <ContributeButton onClick={() => setShowAddForm(!showAddForm)}>
-              {showAddForm ? "Skjul skjema" : "Legg til et sted"}
-            </ContributeButton>
-          )
-        }
-      </AuthGuard>
-
       <FilterSheet isOpen={isFilterSheetOpen} onClose={() => setIsFilterSheetOpen(false)}>
         <h2>Filtrer Steder</h2>
         <div className="filter-section">
           <h3>Kategori</h3>
           <CategoryFilterSection
-            selectedCategory={selectedCategories.length === 0 ? "Alle" : selectedCategories[0]}
+            selectedCategory={selectedCategories.length === 0 ? "Alle" : selectedCategories[0]} // Use first category or "Alle"
             setSelectedCategory={handleCategoryChange}
             filterCategories={categories}
           />
@@ -347,19 +279,13 @@ const Oversikt = () => {
           {filteredSpots.map((spot) => (
             <LocationCard
               key={spot.id}
-              spot={spot}
+              spot={{ ...spot, description: truncateDescription(spot.description) }}
               variant="primary"
               onClick={() => handleSpotClick(spot)}
             />
           ))}
         </SpotList>
       </SpotListSection>
-
-      <AddSpotForm
-        isOpen={showAddForm}
-        onClose={() => setShowAddForm(false)}
-        onAddSpot={handleAddSpot}
-      />
     </div>
   );
 };

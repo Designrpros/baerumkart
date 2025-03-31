@@ -65,6 +65,10 @@ export default function Home() {
     router.push(`/location/${spotId}`);
   };
 
+  const truncateDescription = (description: string, limit: number = 100) => {
+    return description.length > limit ? description.substring(0, limit) + "..." : description;
+  };
+
   const filteredSpots = spotsList.filter((spot: Spot) =>
     spot.name.toLowerCase().includes(searchQuery.toLowerCase())
   );
@@ -100,7 +104,7 @@ export default function Home() {
                   >
                     <div className="result-content">
                       <h3 className="search-result-title">{spot.name}</h3>
-                      <p className="search-result-description">{spot.description}</p>
+                      <p className="search-result-description">{truncateDescription(spot.description)}</p>
                     </div>
                     <img
                       src={imageMap[spot.id] || "/Hero.jpg"}

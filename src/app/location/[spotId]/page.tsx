@@ -1,30 +1,21 @@
-// src/app/location/[spotId]/page.tsx
 "use client";
 
 import { useState, useEffect } from "react";
 import { useRouter, useParams } from "next/navigation";
 import styled from "styled-components";
 import { db } from "../../../firebase";
-import { collection, onSnapshot, deleteDoc, doc } from "firebase/firestore";
+import { collection, onSnapshot } from "firebase/firestore";
 import { Spot } from "../../../data/spots";
-import { AuthGuard } from "../../../components/AuthGuard";
-import { AddSpotForm } from "../../../components/AddSpotForm";
 
-// Import Next.js types explicitly (optional but recommended)
-import type { NextPage } from "next";
-
-// Define props type using NextPage or a custom interface
 interface LocationDetailPageProps {
   params: { spotId: string };
 }
 
-// Use the type with the component
 const LocationDetailPage = () => {
   const params = useParams<{ spotId: string }>();
   const router = useRouter();
   const { spotId } = params;
   const [spot, setSpot] = useState<Spot | null>(null);
-  const [showAddForm, setShowAddForm] = useState(false);
 
   useEffect(() => {
     const unsubscribe = onSnapshot(collection(db, "spots"), (snapshot) => {
@@ -37,18 +28,6 @@ const LocationDetailPage = () => {
     });
     return () => unsubscribe();
   }, [spotId]);
-
-  const handleUpdateSpot = async (updatedSpot: Spot) => {
-    setShowAddForm(false);
-    setSpot(updatedSpot);
-  };
-
-  const handleDeleteSpot = async () => {
-    if (confirm("Er du sikker på at du vil slette dette stedet?")) {
-      await deleteDoc(doc(db, "spots", spotId));
-      router.push("/oversikt");
-    }
-  };
 
   if (!spot) {
     return (
@@ -109,15 +88,6 @@ const LocationDetailPage = () => {
           <ButtonContainer>
             <BackButton onClick={() => router.push("/oversikt")}>Tilbake til Oversikt</BackButton>
             <MapButton onClick={() => router.push(`/map?highlight=${spot.id}`)}>Se på Kart</MapButton>
-            <AuthGuard>
-              {(user) =>
-                user && (
-                  <ContributeButton onClick={() => setShowAddForm(!showAddForm)}>
-                    {showAddForm ? "Skjul skjema" : "Rediger sted"}
-                  </ContributeButton>
-                )
-              }
-            </AuthGuard>
           </ButtonContainer>
         </Card>
 
@@ -185,19 +155,10 @@ const LocationDetailPage = () => {
           </Card>
         )}
       </ContentWrapper>
-
-      <AddSpotForm
-        isOpen={showAddForm}
-        onClose={() => setShowAddForm(false)}
-        onAddSpot={handleUpdateSpot}
-        spot={spot}
-        onDelete={handleDeleteSpot}
-      />
     </PageWrapper>
   );
 };
 
-// Styled components remain unchanged
 const PageWrapper = styled.div`
   min-height: 100vh;
   width: 100vw;
@@ -207,10 +168,6 @@ const PageWrapper = styled.div`
   align-items: center;
   padding: 0 0 2rem 0;
 `;
-
-// ... (all other styled-components unchanged)
-
-export default LocationDetailPage;
 
 const HeroSection = styled.section`
   position: relative;
@@ -375,22 +332,6 @@ const MapButton = styled.button`
   }
 `;
 
-const ContributeButton = styled.button`
-  background: #ff6f61;
-  color: white;
-  border: none;
-  padding: 0.75rem 1.5rem;
-  border-radius: 20px;
-  cursor: pointer;
-  font-size: 1rem;
-  font-family: "Helvetica", sans-serif;
-  transition: background-color 0.3s ease;
-
-  &:hover {
-    background-color: #ff897d;
-  }
-`;
-
 const ReviewSection = styled.div`
   margin-top: 2rem;
 `;
@@ -428,3 +369,5 @@ const ReviewRating = styled.p`
   font-size: 0.9rem;
   color: #666;
 `;
+
+export default LocationDetailPage;
