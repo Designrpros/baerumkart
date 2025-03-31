@@ -1,6 +1,6 @@
 // /app/login/page.js
 import { Suspense } from "react";
-import LoginForm from "./LoginForm"; // Adjust the path if necessary
+import LoginForm from "./LoginForm";
 
 export default function LoginPage() {
   return (

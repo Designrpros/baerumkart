@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { getAuth, onAuthStateChanged, User } from "firebase/auth";
-import firebaseApp from "../firebase"; // Assume firebase config is here
+import firebaseApp from "../firebase";
 
 interface AuthGuardProps {
   children: (user: User | null) => React.ReactNode;
