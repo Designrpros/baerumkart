@@ -12,8 +12,8 @@
     border-radius: 30px;
   
     @media (max-width: 768px) {
-      max-width: 90%; /* Narrower on mobile */
-      margin-top: 0.5rem;
+      max-width: 80%; /* Smaller width on mobile */
+      margin: 0.5rem auto; /* Center and reduce top margin */
     }
   }
   
@@ -29,8 +29,8 @@
     background-color: #fff;
   
     @media (max-width: 768px) {
-      padding: 0.5rem; /* Smaller padding on mobile */
-      font-size: 0.9rem; /* Smaller text */
+      padding: 0.5rem; /* Smaller padding */
+      font-size: 0.85rem; /* Smaller text */
     }
   }
   
@@ -45,7 +45,7 @@
   .search-results {
     position: absolute;
     top: 100%;
-    right: 0;
+    left: 0; /* Align left to match input */
     width: 100%;
     max-width: 500px; /* Default for larger screens */
     max-height: 300px;
@@ -55,13 +55,12 @@
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
     z-index: 1002;
     padding: 0.5rem;
+    box-sizing: border-box; /* Ensure padding fits within width */
   
     @media (max-width: 768px) {
-      max-width: 90%; /* Match search-container on mobile */
-      right: auto; /* Center align */
-      left: 5%; /* Center with max-width */
-      padding: 0.25rem; /* Smaller padding */
+      max-width: 80%; /* Match search-container */
       max-height: 200px; /* Shorter dropdown */
+      padding: 0.25rem; /* Smaller padding */
     }
   }
   
@@ -75,7 +74,7 @@
     transition: background-color 0.3s ease;
   
     @media (max-width: 768px) {
-      padding: 0.25rem; /* Smaller padding on mobile */
+      padding: 0.25rem; /* Smaller padding */
     }
   }
   
@@ -93,6 +92,7 @@
     align-items: flex-start;
     text-align: left;
     flex-grow: 1;
+    overflow: hidden; /* Prevent text overflow */
   }
   
   .result-image {
@@ -101,9 +101,10 @@
     object-fit: cover;
     border-radius: 4px;
     margin-left: 0.5rem;
+    flex-shrink: 0; /* Prevent image shrinking */
   
     @media (max-width: 768px) {
-      width: 30px; /* Smaller image on mobile */
+      width: 30px; /* Smaller image */
       height: 30px;
       margin-left: 0.25rem;
     }
@@ -113,9 +114,12 @@
     margin: 0;
     font-size: 1.1rem; /* Default for larger screens */
     color: #1a1a1a;
+    white-space: nowrap; /* Prevent wrapping */
+    overflow: hidden;
+    text-overflow: ellipsis;
   
     @media (max-width: 768px) {
-      font-size: 0.9rem; /* Smaller title on mobile */
+      font-size: 0.9rem; /* Smaller title */
     }
   }
   
@@ -123,8 +127,11 @@
     font-size: 0.9rem; /* Default for larger screens */
     color: #666;
     margin: 0;
+    white-space: nowrap; /* Prevent wrapping */
+    overflow: hidden;
+    text-overflow: ellipsis;
   
     @media (max-width: 768px) {
-      font-size: 0.8rem; /* Smaller text on mobile */
+      font-size: 0.75rem; /* Smaller text */
     }
   }

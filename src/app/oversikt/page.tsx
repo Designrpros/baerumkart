@@ -17,7 +17,7 @@ const HeroSection = styled.section`
   justify-content: center;
   align-items: center;
   text-align: center;
-  height: 50vh; /* Default for larger screens */
+  height: 50vh;
   background-image: url("/Hero4.jpg");
   background-size: cover;
   background-position: center;
@@ -25,26 +25,26 @@ const HeroSection = styled.section`
   color: white;
 
   @media (max-width: 768px) {
-    height: 30vh; /* Reduced height on mobile */
+    height: 30vh;
   }
 `;
 
 const HeroTitle = styled.h1`
-  font-size: 2.5rem; /* Default for larger screens */
+  font-size: 2.5rem;
   font-weight: bold;
   margin-bottom: 1rem;
   z-index: 1;
   text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
 
   @media (max-width: 768px) {
-    font-size: 1.5rem; /* Smaller title on mobile */
+    font-size: 1.5rem;
     margin-bottom: 0.5rem;
   }
 `;
 
 const FilterToggleButton = styled.button`
   position: fixed;
-  top: 60px; /* Default for larger screens */
+  top: 60px;
   right: 20px;
   padding: 0.75rem 1.5rem;
   background-color: #fff;
@@ -62,44 +62,44 @@ const FilterToggleButton = styled.button`
   }
 
   @media (max-width: 768px) {
-    top: 10px; /* Closer to top on mobile */
+    top: 10px;
     right: 10px;
-    padding: 0.5rem 1rem; /* Smaller padding */
-    font-size: 0.9rem; /* Smaller text */
+    padding: 0.5rem 1rem;
+    font-size: 0.9rem;
   }
 `;
 
 const SpotListSection = styled.section`
-  padding: 2rem 1rem; /* Default for larger screens */
+  padding: 2rem 1rem;
   text-align: center;
 
   @media (max-width: 768px) {
-    padding: 1rem 0.5rem; /* Reduced padding on mobile */
+    padding: 1rem 0.5rem;
   }
 `;
 
 const SpotListTitle = styled.h2`
-  font-size: 1.5rem; /* Default for larger screens */
+  font-size: 1.5rem;
   font-weight: 600;
   margin-bottom: 1.5rem;
 
   @media (max-width: 768px) {
-    font-size: 1.2rem; /* Smaller title on mobile */
+    font-size: 1.2rem;
     margin-bottom: 1rem;
   }
 `;
 
 const SpotList = styled.div`
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(400px, 1fr)); /* Default for larger screens */
+  grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
   gap: 1rem;
   max-width: 1200px;
   margin: 0 auto;
 
   @media (max-width: 768px) {
-    grid-template-columns: 1fr; /* Single column on mobile */
-    gap: 0.5rem; /* Smaller gap */
-    padding: 0 0.5rem; /* Add padding to prevent edge overlap */
+    grid-template-columns: 1fr;
+    gap: 0.5rem;
+    padding: 0 0.5rem;
   }
 `;
 
